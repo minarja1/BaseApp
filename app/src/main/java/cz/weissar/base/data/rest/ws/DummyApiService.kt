@@ -1,17 +1,15 @@
 package cz.weissar.base.data.rest.ws
 
-import cz.weissar.base.data.rest.dto.DummyResponse
+import cz.weissar.base.data.rest.dto.response.DummyResponse
 import retrofit2.Retrofit
 import retrofit2.http.GET
 
-interface DummyWebService {
+interface DummyApiService {
 
     companion object {
-        operator fun invoke(
-            retrofit: Retrofit
-        ): DummyWebService {
+        operator fun invoke(retrofit: Retrofit): DummyApiService {
             return retrofit
-                .create(DummyWebService::class.java)
+                .create(DummyApiService::class.java)
         }
     }
 

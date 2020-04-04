@@ -1,4 +1,4 @@
-package cz.weissar.base.data.rest.dto
+package cz.weissar.base.data.rest.dto.response
 
 data class DummyResponse(
 

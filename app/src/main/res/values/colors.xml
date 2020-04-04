@@ -1,8 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#AD1457</color>
-    <color name="colorPrimaryDark">#880E4F</color>
-    <color name="colorAccent">#E53935</color>
+    <color name="colorPrimary">#37474f</color>
+    <color name="colorAccent">#466c80</color>
+    <color name="colorOnPrimary">#ffffff</color>
+    <color name="colorPrimaryDark">#102027</color>
+    <color name="colorPrimaryLight">#62727b</color>
+
+    <color name="colorBackground">#000000</color>
+    <color name="colorOnBackground">#FFFFFF</color>
+
+    <color name="colorSurface">#1C1C1E</color>
+    <color name="colorOnSurface">#FFFFFF</color>
+
+    <color name="colorWindowBackground">#000000</color>
+
+    <color name="colorPanel">#000000</color>
+
+    <color name="colorOverlay">#CCffffff</color>
+    <color name="colorOverlayInverse">#CCFFFFFF</color>
+
+    <color name="divider">#1fFFFFFF</color>
+    <color name="drawerBackground">#000000</color>
+    <color name="colorBottomNavigationBackground">#121212</color>
+    <color name="colorBottomNavigation">#8CFFFFFF</color>
+    <color name="toolbarBackground">#121212</color>
+
+    <color name="colorToolbarIcon">#DDD</color>
+
+    <color name="textColorPrimary">#D9FFFFFF</color>
+    <color name="textColorSecondary">#99FFFFFF</color>
+    <color name="textColorTertiary">#40FFFFFF</color>
+
+    <color name="textColorPrimaryInverse">#D9000000</color>
+    <color name="textColorSecondaryInverse">#99000000</color>
+    <color name="textColorTertiaryInverse">#40000000</color>
+
+    <color name="colorGreenDark">#30D158</color>
+    <color name="cardViewOutlineFormColor">#222222</color>
+    <color name="cardViewOutlineUnactiveColor">#222222</color>
+    <color name="cardViewOutlineActiveColor">#30D158</color>
+
+    <color name="shimmer_block">#2d2d2d</color>
+    <color name="shimmer_color">#A21c1e1c</color>
 
 </resources>

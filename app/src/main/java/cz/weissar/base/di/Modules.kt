@@ -3,9 +3,11 @@ package cz.weissar.base.di
 import androidx.room.Room
 import cz.weissar.base.common.prefs.PrefManager
 import cz.weissar.base.data.db.AppDatabase
-import cz.weissar.base.data.rest.ws.DummyWebService
+import cz.weissar.base.data.rest.ws.DummyApiService
+import cz.weissar.base.data.rest.ws.YoutubeApiService
 import cz.weissar.base.di.repositories.DummyRepository
 import cz.weissar.base.ui.dummy.DummyViewModel
+import cz.weissar.base.ui.youtube.YoutubeViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -30,7 +32,6 @@ val appModule = module {
 val restModule = module {
 
     // retrofit
-    httpClientAndConverter()
     ws()
 }
 val dbModule = module {
@@ -65,15 +66,28 @@ private fun Module.preferences() {
 private fun Module.schedule() {
     single { DummyRepository() }
     viewModel { DummyViewModel(get()) }
+    viewModel { YoutubeViewModel(get()) }
 }
 
 private fun Module.ws() {
-    single { DummyWebService(get()) }
+    single {
+        DummyApiService(
+            createRetrofit(
+                createOkHttpClient(),
+                "https://jsonplaceholder.typicode.com/"
+            )
+        )
+    }
+    single {
+        YoutubeApiService(
+            createRetrofit(
+                createOkHttpClient(),
+                "https://www.googleapis.com/youtube/v3/"
+            )
+        )
+    }
 }
 
-private fun Module.httpClientAndConverter() {
-    single { createRetrofit(createOkHttpClient(), "https://jsonplaceholder.typicode.com/") }
-}
 
 fun createOkHttpClient(): OkHttpClient {
     return OkHttpClient.Builder()

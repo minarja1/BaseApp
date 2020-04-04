@@ -57,3 +57,6 @@ const val OfferAll = "offer/all"
 const val OfferCategories = "offer/categories"
 const val OfferViewCounter = "offer/viewCounter"
 const val SupportTicketAdd = "support-ticket/add"
+
+const val apiKey = "AIzaSyAGAaxPQfoD1joGc2qs1B5K9xDGzlH3oo8"
+

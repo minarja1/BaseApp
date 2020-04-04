@@ -1,7 +1,7 @@
 package cz.weissar.base.ui.dummy
 
 import androidx.lifecycle.MutableLiveData
-import cz.weissar.base.data.rest.dto.DummyResponse
+import cz.weissar.base.data.rest.dto.response.DummyResponse
 import cz.weissar.base.di.base.BaseViewModel
 import cz.weissar.base.di.repositories.DummyRepository
 
