@@ -7,7 +7,8 @@ import cz.weissar.base.data.rest.ws.DummyApiService
 import cz.weissar.base.data.rest.ws.YoutubeApiService
 import cz.weissar.base.di.repositories.DummyRepository
 import cz.weissar.base.ui.dummy.DummyViewModel
-import cz.weissar.base.ui.youtube.YoutubeViewModel
+import cz.weissar.base.ui.youtube.detail.YoutubeDetailViewModel
+import cz.weissar.base.ui.youtube.list.YoutubeListViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -66,7 +67,8 @@ private fun Module.preferences() {
 private fun Module.schedule() {
     single { DummyRepository() }
     viewModel { DummyViewModel(get()) }
-    viewModel { YoutubeViewModel(get()) }
+    viewModel { YoutubeListViewModel(get()) }
+    viewModel { YoutubeDetailViewModel(get()) }
 }
 
 private fun Module.ws() {

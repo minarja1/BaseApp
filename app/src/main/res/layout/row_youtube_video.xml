@@ -2,35 +2,40 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?selectableItemBackground">
+    android:layout_height="230dp"
+    android:layout_marginTop="8dp"
+    android:background="@color/colorSurface">
 
     <LinearLayout
+        android:id="@+id/videoBackGround"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@color/colorSurface"
+        android:layout_height="match_parent"
+        android:background="?selectableItemBackground"
+        android:elevation="1dp"
         android:orientation="vertical"
-        android:padding="@dimen/padding_default">
+        android:theme="@style/AppTheme">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:transitionName="thumbnailTransition"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.Title"
             android:textColor="@color/textColorPrimary"
-            tools:text="The MOST Dangerous Place In Minecraft!" />
-
-        <TextView
-            android:id="@+id/descripiton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:ellipsize="end"
-            android:maxLines="4"
-            android:textAppearance="@style/TextAppearance.Body1"
-            android:textColor="@color/textColorPrimary"
-            tools:text="I found the most dangerous place in minecraft not asdf asd fasd fsd a sdf asepic\n100 CLUB MERCH OUT NOW! https://represent.com/store/pewdiepie (Thank you)\n\nPewdiepie's Pixelings DOWNLOAD:\niOS: https://buff.ly/2pNG0aT\nAndroid: https://buff.ly/34C68nZ\n#pewdiepie #pixelings\n\nMinecraft" />
+            tools:text="The MOST Dangerous Place In Minecraft!The MOST Dangerous Place In Minecraft!The MOST Dangerous Place In Minecraft!" />
 
     </LinearLayout>
+
 </FrameLayout>

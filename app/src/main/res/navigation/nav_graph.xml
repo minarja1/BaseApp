@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    app:startDestination="@id/youtubeVideoListFragment">
+
+    <fragment
+        android:id="@+id/youtubeVideoListFragment"
+        android:name="cz.weissar.base.ui.youtube.list.YoutubeVideoListFragment"
+        android:label="Videos" >
+        <action
+            android:id="@+id/openVideoDetailAction"
+            app:destination="@id/youtubeVideoDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/youtubeVideoDetailFragment"
+        android:name="cz.weissar.base.ui.youtube.detail.YoutubeVideoDetailFragment"
+        android:label="Video detail" >
+        <argument
+            android:name="videoId"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

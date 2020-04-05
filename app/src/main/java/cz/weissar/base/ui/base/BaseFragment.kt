@@ -36,6 +36,7 @@ abstract class BaseFragment(@LayoutRes private val layoutId: Int) : Fragment(R.l
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //todo neco sofistikovanejsiho vcetne erroru atd.
         viewModel.state.observe {
             progressBar.isVisible = it is State.Loading
 
