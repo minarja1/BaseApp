@@ -1,7 +1,9 @@
 package cz.weissar.base.ui
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import cz.weissar.base.R
 import cz.weissar.base.common.prefs.PrefManager
 import org.koin.android.ext.android.inject
@@ -15,6 +17,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        prefs.isItGood
+
     }
 }

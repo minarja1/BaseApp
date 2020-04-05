@@ -24,7 +24,8 @@ interface YoutubeApiService {
         @Query("chart") chart: String,
         @Query("regionCode") regionCode: String,
         @Query("videoCategoryId") videoCategoryId: String,
-        @Query("key") apiKey: String
+        @Query("key") apiKey: String,
+        @Query("maxResults") maxResults: Int
     ): YouTubeVideosResponse
 
 }

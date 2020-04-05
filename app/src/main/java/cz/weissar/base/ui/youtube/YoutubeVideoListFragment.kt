@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import cz.weissar.base.R
 import cz.weissar.base.ui.base.BaseFragment
-import kotlinx.android.synthetic.main.fragment_dummy.*
+import kotlinx.android.synthetic.main.fragment_youtube_video_list.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class YoutubeVideoListFragment : BaseFragment(R.layout.fragment_youtube_video_list) {
@@ -12,7 +12,7 @@ class YoutubeVideoListFragment : BaseFragment(R.layout.fragment_youtube_video_li
     override val viewModel by viewModel<YoutubeViewModel>()
     //private val viewModel2 by sharedViewModel<ScheduleViewModel>()
 
-    private val adapter by lazy {
+    private val youtubeAdapter by lazy {
         YoutubeVideoAdapterBuilder(requireContext()) {
             // TODO on click
         }.adapter
@@ -22,14 +22,15 @@ class YoutubeVideoListFragment : BaseFragment(R.layout.fragment_youtube_video_li
         super.onViewCreated(view, savedInstanceState)
 
         // init views
-        recyclerView.adapter = adapter
+        recyclerView.adapter = youtubeAdapter
+
 
         // init observers
         viewModel.videos.observe {
-            adapter.submitList(it)
+            youtubeAdapter.submitList(it)
         }
 
         // load
-        viewModel.getOrLoadDummy()
+        viewModel.loadYouTubeVideos()
     }
 }

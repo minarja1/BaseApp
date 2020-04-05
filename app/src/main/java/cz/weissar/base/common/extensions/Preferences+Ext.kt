@@ -1,6 +1,12 @@
 package cz.weissar.base.common.extensions
 
 import android.content.SharedPreferences
+import android.graphics.Canvas
+import android.graphics.Rect
+import android.graphics.drawable.Drawable
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.recyclerview.widget.RecyclerView
+import cz.weissar.base.R
 import cz.weissar.base.common.prefs.PreferenceProperty
 import cz.weissar.base.common.prefs.PrefManager
 import kotlin.properties.ReadWriteProperty
@@ -52,3 +58,41 @@ fun PrefManager.stringPreference(
         getter = SharedPreferences::getString,
         setter = SharedPreferences.Editor::putString
     )
+
+
+fun RecyclerView.divider() {
+    val listDivider = LastDividerItemDecorator(
+        AppCompatResources.getDrawable(
+            context,
+            R.drawable.recyclerview_divider_16dp_vertical
+        )!!
+    )
+    addItemDecoration(listDivider)
+}
+
+
+class LastDividerItemDecorator(private val mDivider: Drawable) : RecyclerView.ItemDecoration() {
+    private val mBounds = Rect()
+
+    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        canvas.save()
+
+        val dividerLeft = parent.paddingLeft
+        val dividerRight = parent.width - parent.paddingRight
+
+        val childCount = parent.childCount
+        for (i in 0..childCount - 2) {
+            val child = parent.getChildAt(i)
+
+            val params = child.layoutParams as RecyclerView.LayoutParams
+
+            val dividerTop = child.bottom + params.bottomMargin
+            val dividerBottom = dividerTop + mDivider.intrinsicHeight
+
+            mDivider.setBounds(dividerLeft, dividerTop, dividerRight, dividerBottom)
+            mDivider.draw(canvas)
+        }
+
+        canvas.restore()
+    }
+}

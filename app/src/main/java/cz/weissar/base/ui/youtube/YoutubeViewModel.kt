@@ -10,7 +10,7 @@ class YoutubeViewModel(private val ws: YoutubeApiService) : BaseViewModel() {
 
     val videos = MutableLiveData<List<YoutubeVideo>>()
 
-    fun getOrLoadDummy() {
+    fun loadYouTubeVideos() {
         launch {
             // if (alreadyDownloaded) dummyRepo.loadDummy()
             // else
@@ -19,7 +19,8 @@ class YoutubeViewModel(private val ws: YoutubeApiService) : BaseViewModel() {
                 "mostPopular",
                 "US",
                 "20",
-                apiKey
+                apiKey,
+                25
             )
 
             videos.postValue(youTubeVideoList.toVideoList())
