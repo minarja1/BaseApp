@@ -1,16 +1,18 @@
 package cz.weissar.base.di.base
 
+import android.content.ComponentCallbacks
+import android.content.res.Configuration
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import cz.weissar.base.common.enums.State
 import kotlinx.coroutines.*
 import retrofit2.HttpException
 
-abstract class BaseViewModel : ViewModel() {
+abstract class BaseViewModel : ViewModel(), ComponentCallbacks {
 
     private val job = SupervisorJob() // vlákno pro zpracování
     private val handler = CoroutineExceptionHandler { _, ex -> ex.printStackTrace() }
-    private val scope = CoroutineScope(Dispatchers.Default + job + handler)
+    protected val scope = CoroutineScope(Dispatchers.Default + job + handler)
 
     val state = MutableLiveData<State>()
 
@@ -55,5 +57,13 @@ abstract class BaseViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         job.cancel() // optional
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+
+    }
+
+    override fun onLowMemory() {
+
     }
 }

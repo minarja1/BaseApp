@@ -11,14 +11,15 @@
         android:background="@color/colorToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:layout_collapseMode="pin"
-        app:title="kok" />
+        app:layout_collapseMode="pin" />
 
-    <TextView
-        android:id="@+id/videoIdTextView"
+    <ImageView
+        android:id="@+id/detailImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.Title"
-        tools:text="asdfklsdkjfalksdflah" />
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        tools:src="@tools:sample/backgrounds/scenic" />
+
 
 </LinearLayout>

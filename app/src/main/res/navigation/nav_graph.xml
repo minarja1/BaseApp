@@ -9,7 +9,11 @@
         android:label="Videos" >
         <action
             android:id="@+id/openVideoDetailAction"
-            app:destination="@id/youtubeVideoDetailFragment" />
+            app:destination="@id/youtubeVideoDetailFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_enter_anim"
+            app:popExitAnim="@anim/nav_default_exit_anim" />
     </fragment>
 
     <fragment
@@ -18,6 +22,9 @@
         android:label="Video detail" >
         <argument
             android:name="videoId"
+            app:argType="string" />
+        <argument
+            android:name="thumbnailUrl"
             app:argType="string" />
     </fragment>
 

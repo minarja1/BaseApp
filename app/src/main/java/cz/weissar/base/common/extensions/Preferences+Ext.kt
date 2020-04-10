@@ -5,10 +5,16 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
 import cz.weissar.base.R
 import cz.weissar.base.common.prefs.PreferenceProperty
 import cz.weissar.base.common.prefs.PrefManager
+import kotlinx.android.synthetic.main.fragment_youtube_video_detail.*
 import kotlin.properties.ReadWriteProperty
 
 fun PrefManager.longPreference(
@@ -70,6 +76,11 @@ fun RecyclerView.divider() {
     addItemDecoration(listDivider)
 }
 
+fun Fragment.initToolbar(toolbar: Toolbar){
+    val navController = NavHostFragment.findNavController(this)
+    val appBarConfiguration = AppBarConfiguration(navController.graph)
+    toolbar.setupWithNavController(navController, appBarConfiguration)
+}
 
 class LastDividerItemDecorator(private val mDivider: Drawable) : RecyclerView.ItemDecoration() {
     private val mBounds = Rect()

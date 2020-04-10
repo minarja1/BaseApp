@@ -60,3 +60,5 @@ const val SupportTicketAdd = "support-ticket/add"
 
 const val apiKey = "AIzaSyAGAaxPQfoD1joGc2qs1B5K9xDGzlH3oo8"
 
+const val pageSize = 25
+

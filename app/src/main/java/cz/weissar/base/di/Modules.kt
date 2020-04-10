@@ -3,12 +3,14 @@ package cz.weissar.base.di
 import androidx.room.Room
 import cz.weissar.base.common.prefs.PrefManager
 import cz.weissar.base.data.db.AppDatabase
+import cz.weissar.base.data.db.repository.YouTubeVideoPagedRepository
 import cz.weissar.base.data.rest.ws.DummyApiService
 import cz.weissar.base.data.rest.ws.YoutubeApiService
 import cz.weissar.base.di.repositories.DummyRepository
 import cz.weissar.base.ui.dummy.DummyViewModel
 import cz.weissar.base.ui.youtube.detail.YoutubeDetailViewModel
 import cz.weissar.base.ui.youtube.list.YoutubeListViewModel
+import kotlinx.coroutines.CoroutineScope
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -18,6 +20,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
 
@@ -34,7 +37,16 @@ val restModule = module {
 
     // retrofit
     ws()
+
+    single { (networkExecutor: Executor, scope: CoroutineScope) ->
+        YouTubeVideoPagedRepository(
+            get(),
+            networkExecutor,
+            scope
+        )
+    }
 }
+
 val dbModule = module {
 
     // db

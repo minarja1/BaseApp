@@ -6,7 +6,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.transition.TransitionInflater
+import coil.api.load
 import cz.weissar.base.R
+import cz.weissar.base.common.extensions.initToolbar
 import cz.weissar.base.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_youtube_video_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -20,15 +23,16 @@ class YoutubeVideoDetailFragment : BaseFragment(R.layout.fragment_youtube_video_
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initToolbar(toolbar)
 
-        initToolbar()
-
-        videoIdTextView.text = args.videoId
+        detailImageView.transitionName = args.thumbnailUrl
+        detailImageView.load(args.thumbnailUrl)
     }
 
-    private fun initToolbar() {
-        val navController = NavHostFragment.findNavController(this)
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        toolbar.setupWithNavController(navController, appBarConfiguration)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition =
+            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
     }
+
 }
