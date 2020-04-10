@@ -2,6 +2,8 @@ package cz.weissar.base.ui.youtube.list
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.NavHostFragment.findNavController
 import cz.weissar.base.R
 import cz.weissar.base.common.extensions.initToolbar
 import cz.weissar.base.data.NetworkState
@@ -14,8 +16,21 @@ class YoutubeVideoListFragment : BaseFragment(R.layout.fragment_youtube_video_li
     override val viewModel by viewModel<YoutubeListViewModel>()
 
     private val youtubeAdapter by lazy {
-        VideosAdapter()
+        VideosAdapter { video, imageView ->
+            if (video.id != null && video.maxResThumbnailUrl != null) {
+                val action = YoutubeVideoListFragmentDirections.openVideoDetailAction(
+                    video.id,
+                    video.maxResThumbnailUrl
+                )
+                val extras = FragmentNavigatorExtras(
+                    imageView to video.maxResThumbnailUrl
+                )
+
+                findNavController(this).navigate(action, extras)
+            }
+        }
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

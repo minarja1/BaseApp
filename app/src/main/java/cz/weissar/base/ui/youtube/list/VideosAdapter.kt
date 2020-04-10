@@ -12,7 +12,8 @@ import coil.api.load
 import cz.weissar.base.R
 import cz.weissar.base.data.rest.dto.model.YouTubeVideo
 
-class VideosAdapter : PagedListAdapter<YouTubeVideo, RecyclerView.ViewHolder>(diffCallback) {
+class VideosAdapter(private var onItemClicked: (video: YouTubeVideo, imageView: ImageView) -> Unit) :
+    PagedListAdapter<YouTubeVideo, RecyclerView.ViewHolder>(diffCallback) {
 
     companion object {
         private val diffCallback = object : DiffUtil.ItemCallback<YouTubeVideo>() {
@@ -37,8 +38,12 @@ class VideosAdapter : PagedListAdapter<YouTubeVideo, RecyclerView.ViewHolder>(di
     class VideoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val title: TextView = view.findViewById(R.id.title)
         private val imageView: ImageView = view.findViewById(R.id.imageView)
+        private val videoBackGround: ViewGroup = view.findViewById(R.id.videoBackGround)
 
-        fun bind(video: YouTubeVideo?) {
+        fun bind(
+            video: YouTubeVideo?,
+            onItemClicked: (video: YouTubeVideo, imageView: ImageView) -> Unit
+        ) {
             if (video == null) return
             title.text = video.title
             imageView.load(video.maxResThumbnailUrl) {
@@ -46,13 +51,13 @@ class VideosAdapter : PagedListAdapter<YouTubeVideo, RecyclerView.ViewHolder>(di
             }
             imageView.transitionName = video.maxResThumbnailUrl
 
-//            videoBackGround.setOnClickListener {
-//                onClick(item, imageView)
-//            }
+            videoBackGround.setOnClickListener {
+                onItemClicked(video, imageView)
+            }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as VideoViewHolder).bind(getItem(position))
+        (holder as VideoViewHolder).bind(getItem(position), onItemClicked)
     }
 }
