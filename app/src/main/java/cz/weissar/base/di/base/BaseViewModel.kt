@@ -41,7 +41,7 @@ abstract class BaseViewModel : ViewModel(), ComponentCallbacks {
         defaultState: MutableLiveData<NetworkState>? = state,
         operation: (suspend () -> Unit)
     ) {
-        uiScope.launch {
+        ioScope.launch {
             defaultState?.postValue(NetworkState.LOADING)
             try {
                 operation()
