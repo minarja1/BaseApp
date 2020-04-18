@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/youtubeVideoListFragment"
-        android:name="cz.weissar.base.ui.youtube.list.YoutubeVideoListFragment"
+        android:name="cz.minarik.base.ui.youtube.list.YoutubeVideoListFragment"
         android:label="Videos" >
         <action
             android:id="@+id/openVideoDetailAction"
@@ -18,11 +18,11 @@
 
     <fragment
         android:id="@+id/youtubeVideoDetailFragment"
-        android:name="cz.weissar.base.ui.youtube.detail.YoutubeVideoDetailFragment"
+        android:name="cz.minarik.base.ui.youtube.detail.YoutubeVideoDetailFragment"
         android:label="Video detail" >
         <argument
             android:name="video"
-            app:argType="cz.weissar.base.data.rest.dto.model.YouTubeVideo" />
+            app:argType="cz.minarik.base.data.rest.dto.model.YouTubeVideo" />
     </fragment>
 
 </navigation>

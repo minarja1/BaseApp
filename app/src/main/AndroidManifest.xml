@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cz.weissar.base">
+    package="cz.minarik.base">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="cz.weissar.base.App"
+        android:name="cz.minarik.base.App"
         android:allowBackup="true"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="cz.weissar.base.ui.MainActivity"
+            android:name="cz.minarik.base.ui.MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
