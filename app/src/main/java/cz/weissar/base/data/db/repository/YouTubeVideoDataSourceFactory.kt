@@ -9,7 +9,7 @@ import java.util.concurrent.Executor
 
 /**
  * A simple data source factory which also provides a way to observe the last created data source.
- * This allows us to channel its network request status etc back to the UI. See the Listing creation
+ * This allows us to channel its network request status etc back to the UI. See the PagedListWithCallbacks creation
  * in the Repository class.
  */
 class YouTubeVideoDataSourceFactory(

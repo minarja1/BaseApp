@@ -21,14 +21,14 @@ import androidx.lifecycle.switchMap
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import cz.weissar.base.common.pageSize
-import cz.weissar.base.data.Listing
+import cz.weissar.base.data.PagedListWithCallbacks
 import cz.weissar.base.data.rest.dto.model.YouTubeVideo
 import cz.weissar.base.data.rest.ws.YoutubeApiService
 import kotlinx.coroutines.CoroutineScope
 import java.util.concurrent.Executor
 
 /**
- * Repository implementation that returns a Listing that loads data directly from network by using
+ * Repository implementation that returns a PagedListWithCallbacks that loads data directly from network by using
  * the previous / next page keys returned in the query.
  */
 class YouTubeVideoPagedRepository(
@@ -40,23 +40,24 @@ class YouTubeVideoPagedRepository(
         .setInitialLoadSizeHint(pageSize)
         .setEnablePlaceholders(true)
         .setPageSize(pageSize)
+        .setPrefetchDistance(pageSize/2)
         .build()
 
     @MainThread
-    fun getYouTubeVideos(): Listing<YouTubeVideo> {
+    fun getYouTubeVideos(): PagedListWithCallbacks<YouTubeVideo> {
         val sourceFactory = YouTubeVideoDataSourceFactory(apiService, scope, networkExecutor)
 
         // We use toLiveData Kotlin extension function here, you could also use LivePagedListBuilder
         val livePagedList = LivePagedListBuilder(sourceFactory, pagedListConfig()).setFetchExecutor(networkExecutor).build()
 
-        val refreshState = sourceFactory.sourceLiveData.switchMap {
-            it.initialLoad
+        val loadingInitial = sourceFactory.sourceLiveData.switchMap {
+            it.loadingInitial
         }
 
-        return Listing(
+        return PagedListWithCallbacks(
             pagedList = livePagedList,
-            networkState = sourceFactory.sourceLiveData.switchMap {
-                it.networkState
+            loadingAfter = sourceFactory.sourceLiveData.switchMap {
+                it.loadingAfter
             },
             retry = {
                 sourceFactory.sourceLiveData.value?.retryAllFailed()
@@ -64,7 +65,7 @@ class YouTubeVideoPagedRepository(
             refresh = {
                 sourceFactory.sourceLiveData.value?.invalidate()
             },
-            refreshState = refreshState
+            loadingInitial = loadingInitial
         )
     }
 }

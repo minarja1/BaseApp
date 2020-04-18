@@ -79,7 +79,7 @@ private fun Module.preferences() {
 private fun Module.schedule() {
     single { DummyRepository() }
     viewModel { DummyViewModel(get()) }
-    viewModel { YoutubeListViewModel(get()) }
+    viewModel { YoutubeListViewModel() }
     viewModel { YoutubeDetailViewModel(get()) }
 }
 

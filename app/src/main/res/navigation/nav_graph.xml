@@ -21,11 +21,8 @@
         android:name="cz.weissar.base.ui.youtube.detail.YoutubeVideoDetailFragment"
         android:label="Video detail" >
         <argument
-            android:name="videoId"
-            app:argType="string" />
-        <argument
-            android:name="thumbnailUrl"
-            app:argType="string" />
+            android:name="video"
+            app:argType="cz.weissar.base.data.rest.dto.model.YouTubeVideo" />
     </fragment>
 
 </navigation>

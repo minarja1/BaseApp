@@ -12,13 +12,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import cz.weissar.base.R
-import cz.weissar.base.common.enums.State
+import cz.weissar.base.data.Status
 import cz.weissar.base.di.base.BaseViewModel
 import kotlinx.android.synthetic.main.fragment_base.*
 
-abstract class BaseFragment(@LayoutRes private val layoutId: Int) : Fragment(R.layout.fragment_base) {
+abstract class BaseFragment(@LayoutRes private val layoutId: Int) :
+    Fragment(R.layout.fragment_base) {
 
-    abstract val viewModel : BaseViewModel
+    abstract val viewModel: BaseViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,10 +39,10 @@ abstract class BaseFragment(@LayoutRes private val layoutId: Int) : Fragment(R.l
 
         //todo neco sofistikovanejsiho vcetne erroru atd.
         viewModel.state.observe {
-            progressBar.isVisible = it is State.Loading
+            progressBar.isVisible = it.status == Status.RUNNING
 
-            if (it is State.Failure) {
-                Snackbar.make(view, it.e.message ?: "Uknown failure", Snackbar.LENGTH_LONG).show()
+            if (it.status == Status.FAILED) {
+                Snackbar.make(view, it.message ?: "Uknown failure", Snackbar.LENGTH_LONG).show()
             }
         }
     }

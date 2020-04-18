@@ -17,38 +17,42 @@ class YoutubeVideoListFragment : BaseFragment(R.layout.fragment_youtube_video_li
 
     private val youtubeAdapter by lazy {
         VideosAdapter { video, imageView ->
-            if (video.id != null && video.maxResThumbnailUrl != null) {
-                val action = YoutubeVideoListFragmentDirections.openVideoDetailAction(
-                    video.id,
-                    video.maxResThumbnailUrl
-                )
+            val action = YoutubeVideoListFragmentDirections.openVideoDetailAction(
+                video
+            )
+            video.maxResThumbnailUrl?.let {
                 val extras = FragmentNavigatorExtras(
-                    imageView to video.maxResThumbnailUrl
+                    imageView to it
                 )
-
                 findNavController(this).navigate(action, extras)
-            }
+            } ?: findNavController(this).navigate(action)
         }
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initToolbar(toolbar)
 
-        // init views
-        recyclerView.adapter = youtubeAdapter
+        initViews()
 
-        // init observers
-        viewModel.videos.observe {
-            youtubeAdapter.submitList(it)
-        }
+        initObservers()
 
         initSwipeToRefresh()
     }
 
+    private fun initObservers() {
+        viewModel.videos.observe {
+            youtubeAdapter.submitList(it)
+        }
+    }
+
+    private fun initViews() {
+        initToolbar(toolbar)
+        recyclerView.adapter = youtubeAdapter
+    }
+
     private fun initSwipeToRefresh() {
-        viewModel.refreshState.observe {
+        viewModel.loadingInitial.observe {
             swipe_refresh.isRefreshing = it == NetworkState.LOADING
         }
 

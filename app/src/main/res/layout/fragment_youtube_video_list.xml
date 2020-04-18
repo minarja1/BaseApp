@@ -8,6 +8,7 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -17,10 +18,9 @@
             android:clipToPadding="false"
             android:paddingBottom="8dp"
             android:scrollbars="vertical"
-            android:scrollbarThumbVertical="@android:color/darker_gray"
+            android:scrollbarThumbVertical="@color/colorPrimary"
             android:scrollbarSize="5dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:listitem="@layout/row_youtube_video" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -23,9 +23,9 @@ class PagedYouTubeVideoDataSource(
      * There is no sync on the state because paging will always call loadInitial first then wait
      * for it to return some success value before calling loadAfter.
      */
-    val networkState = MutableLiveData<NetworkState>()
+    val loadingAfter = MutableLiveData<NetworkState>()
 
-    val initialLoad = MutableLiveData<NetworkState>()
+    val loadingInitial = MutableLiveData<NetworkState>()
 
     override fun loadBefore(
         params: LoadParams<String>,
@@ -48,14 +48,13 @@ class PagedYouTubeVideoDataSource(
         params: LoadInitialParams<String>,
         callback: LoadInitialCallback<String, YouTubeVideo>
     ) {
-        networkState.postValue(NetworkState.LOADING)
-        initialLoad.postValue(NetworkState.LOADING)
+        loadingInitial.postValue(NetworkState.LOADING)
         scope.launch {
             try {
                 val response = apiService.getYouTubeVideoList(
                     "snippet",
                     "mostPopular",
-                    "US",
+                    "CZ",
                     "20",
                     apiKey,
                     maxResults = params.requestedLoadSize
@@ -63,8 +62,7 @@ class PagedYouTubeVideoDataSource(
 
 
                 retry = null
-                networkState.postValue(NetworkState.LOADED)
-                initialLoad.postValue(NetworkState.LOADED)
+                loadingInitial.postValue(NetworkState.SUCCESS)
                 callback.onResult(
                     response.toVideoList(),
                     response.prevPageToken,
@@ -76,8 +74,7 @@ class PagedYouTubeVideoDataSource(
                     loadInitial(params, callback)
                 }
                 val error = NetworkState.error(exception.message ?: "unknown error")
-                networkState.postValue(error)
-                initialLoad.postValue(error)
+                loadingInitial.postValue(error)
             }
         }
 
@@ -87,13 +84,13 @@ class PagedYouTubeVideoDataSource(
         params: LoadParams<String>,
         callback: LoadCallback<String, YouTubeVideo>
     ) {
-        networkState.postValue(NetworkState.LOADING)
+        loadingAfter.postValue(NetworkState.LOADING)
         scope.launch {
             try {
                 val response = apiService.getYouTubeVideoList(
                     "snippet",
                     "mostPopular",
-                    "US",
+                    "CZ",
                     "20",
                     apiKey,
                     pageToken = params.key,
@@ -101,13 +98,13 @@ class PagedYouTubeVideoDataSource(
                 )
                 retry = null
                 callback.onResult(response.toVideoList(), response.nextPageToken)
-
+                loadingAfter.postValue(NetworkState.SUCCESS)
             } catch (e: Exception) {
                 //todo handle errors properly
                 retry = {
                     loadAfter(params, callback)
                 }
-                networkState.postValue(NetworkState.error(e.message ?: "unknown err"))
+                loadingAfter.postValue(NetworkState.error(e.message ?: "unknown err"))
             }
 
         }

@@ -25,8 +25,11 @@ class YoutubeVideoDetailFragment : BaseFragment(R.layout.fragment_youtube_video_
         super.onViewCreated(view, savedInstanceState)
         initToolbar(toolbar)
 
-        detailImageView.transitionName = args.thumbnailUrl
-        detailImageView.load(args.thumbnailUrl)
+        val video = args.video
+        toolbar.title = video.title
+
+        detailImageView.transitionName = video.maxResThumbnailUrl
+        detailImageView.load(video.maxResThumbnailUrl)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
