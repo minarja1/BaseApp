@@ -3,14 +3,9 @@ package cz.minarik.base.di
 import androidx.room.Room
 import cz.minarik.base.common.prefs.PrefManager
 import cz.minarik.base.data.db.AppDatabase
-import cz.minarik.base.data.db.repository.YouTubeVideoPagedRepository
 import cz.minarik.base.data.rest.ws.DummyApiService
-import cz.minarik.base.data.rest.ws.YoutubeApiService
 import cz.minarik.base.di.repositories.DummyRepository
 import cz.minarik.base.ui.dummy.DummyViewModel
-import cz.minarik.base.ui.youtube.detail.YoutubeDetailViewModel
-import cz.minarik.base.ui.youtube.list.YoutubeListViewModel
-import kotlinx.coroutines.CoroutineScope
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -20,31 +15,22 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
 
 val appModule = module {
 
-    // view modely
-
     // preferences
     preferences()
 
+
+    // view modely
     schedule()
 }
 val restModule = module {
 
     // retrofit
     ws()
-
-    single { (networkExecutor: Executor, scope: CoroutineScope) ->
-        YouTubeVideoPagedRepository(
-            get(),
-            networkExecutor,
-            scope
-        )
-    }
 }
 
 val dbModule = module {
@@ -79,8 +65,6 @@ private fun Module.preferences() {
 private fun Module.schedule() {
     single { DummyRepository() }
     viewModel { DummyViewModel(get()) }
-    viewModel { YoutubeListViewModel() }
-    viewModel { YoutubeDetailViewModel(get()) }
 }
 
 private fun Module.ws() {
@@ -89,14 +73,6 @@ private fun Module.ws() {
             createRetrofit(
                 createOkHttpClient(),
                 "https://jsonplaceholder.typicode.com/"
-            )
-        )
-    }
-    single {
-        YoutubeApiService(
-            createRetrofit(
-                createOkHttpClient(),
-                "https://www.googleapis.com/youtube/v3/"
             )
         )
     }
