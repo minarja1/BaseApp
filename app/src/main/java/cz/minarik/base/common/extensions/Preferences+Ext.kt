@@ -1,11 +1,25 @@
 package cz.minarik.base.common.extensions
 
+import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
+import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Build
+import android.text.Html
+import android.text.Spanned
+import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -14,6 +28,9 @@ import androidx.recyclerview.widget.RecyclerView
 import cz.minarik.base.R
 import cz.minarik.base.common.prefs.PreferenceProperty
 import cz.minarik.base.common.prefs.PrefManager
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.properties.ReadWriteProperty
 
 fun PrefManager.longPreference(
@@ -106,3 +123,110 @@ class LastDividerItemDecorator(private val mDivider: Drawable) : RecyclerView.It
         canvas.restore()
     }
 }
+
+
+
+fun RecyclerView.dividerMedium() {
+    addItemDecoration(SpacesItemDecoration(8.dpToPx))
+}
+
+fun RecyclerView.horizontalDividerMedium() {
+    addItemDecoration(HorizontalSpacesItemDecoration(4.dpToPx))
+}
+
+fun RecyclerView.horizontalDividerLarge() {
+    addItemDecoration(HorizontalSpacesItemDecoration(16.dpToPx))
+}
+
+fun RecyclerView.dividerLarge() {
+    addItemDecoration(SpacesItemDecoration(16.dpToPx))
+}
+
+
+class SpacesItemDecoration(private val space: Int) : RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(outRect: Rect, itemPosition: Int, parent: RecyclerView) {
+        outRect.bottom = space
+    }
+}
+
+class HorizontalSpacesItemDecoration(private val space: Int) : RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(outRect: Rect, itemPosition: Int, parent: RecyclerView) {
+        outRect.right = space
+    }
+}
+
+val Int.pxToDp: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+val Int.dpToPx: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+@SuppressWarnings("deprecated")
+fun String.toHtml(withCdata: Boolean? = false): Spanned =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Html.fromHtml(
+            when (withCdata) {
+                true -> "<![CDATA[$this]]>"
+                false -> this
+                else -> this
+            }, Html.FROM_HTML_MODE_LEGACY
+        )
+    } else {
+        Html.fromHtml(
+            when (withCdata) {
+                true -> "<![CDATA[$this]]>"
+                false -> this
+                else -> this
+            }
+        )
+    }
+
+fun String.toDateFromRSS(): Date? {
+    return parseDate("EEE, dd MMM yyyy HH:mm:ss zzz")
+}
+
+fun String.parseDate(pattern: String = "yyyy-MM-dd'T'HH:mm"): Date? {
+    return try {
+        SimpleDateFormat(pattern, Locale.ENGLISH).parse(this)
+    } catch (e: Exception) {
+        //todo Timber
+        null
+    }
+}
+
+fun Date.toShortFormat(): String {
+    return DateFormat.getDateInstance(DateFormat.SHORT).format(this)
+}
+
+fun Date.toFullFormat(): String {
+    return DateFormat.getDateInstance(DateFormat.FULL).format(this)
+}
+
+fun Date.toLongFormat(): String {
+    return DateFormat.getDateInstance(DateFormat.LONG).format(this)
+}
+
+fun Date.toMediumFormat(): String {
+    return DateFormat.getDateInstance(DateFormat.MEDIUM).format(this)
+}
+
+fun Activity.toast(message: String) {
+    showToast(this, message)
+}
+
+fun Activity.toast(@StringRes resId: Int) {
+    showToast(this, getString(resId))
+}
+
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Context.toast(message: String) {
+    showToast(this, message)
+}
+
+fun Context.toast(@StringRes resId: Int) {
+    showToast(this, getString(resId))
+}
+

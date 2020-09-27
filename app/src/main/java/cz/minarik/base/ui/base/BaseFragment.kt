@@ -6,15 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.LayoutRes
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.google.android.material.snackbar.Snackbar
 import cz.minarik.base.R
 import cz.minarik.base.data.Status
 import cz.minarik.base.di.base.BaseViewModel
-import kotlinx.android.synthetic.main.fragment_base.*
 
 abstract class BaseFragment(@LayoutRes private val layoutId: Int) :
     Fragment(R.layout.fragment_base) {
@@ -39,10 +36,10 @@ abstract class BaseFragment(@LayoutRes private val layoutId: Int) :
 
         //todo neco sofistikovanejsiho vcetne erroru atd.
         viewModel.state.observe {
-            progressBar.isVisible = it.status == Status.RUNNING
+            showLoading(it.status == Status.RUNNING)
 
             if (it.status == Status.FAILED) {
-                Snackbar.make(view, it.message ?: "Uknown failure", Snackbar.LENGTH_LONG).show()
+                showError(it.message)
             }
         }
     }
@@ -50,4 +47,7 @@ abstract class BaseFragment(@LayoutRes private val layoutId: Int) :
     protected fun <T> LiveData<T>.observe(function: (value: T) -> Unit) {
         this.observe(viewLifecycleOwner, Observer { function(it) })
     }
+
+    abstract fun showLoading(show: Boolean)
+    abstract fun showError(error: String?)
 }

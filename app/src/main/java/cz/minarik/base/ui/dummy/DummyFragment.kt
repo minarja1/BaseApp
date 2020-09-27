@@ -2,8 +2,11 @@ package cz.minarik.base.ui.dummy
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import cz.minarik.base.R
+import cz.minarik.base.common.extensions.showToast
 import cz.minarik.base.ui.base.BaseFragment
+import kotlinx.android.synthetic.main.fragment_base.*
 import kotlinx.android.synthetic.main.fragment_dummy.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -31,5 +34,13 @@ class DummyFragment : BaseFragment(R.layout.fragment_dummy) {
 
         // load
         viewModel.getOrLoadDummy()
+    }
+
+    override fun showLoading(show: Boolean) {
+        progressBar.isVisible = show
+    }
+
+    override fun showError(error: String?) {
+        showToast(requireContext(), error ?: "Oops! Something went wrong.")
     }
 }

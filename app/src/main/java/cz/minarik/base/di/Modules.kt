@@ -1,7 +1,6 @@
 package cz.minarik.base.di
 
 import androidx.room.Room
-import cz.minarik.base.common.prefs.PrefManager
 import cz.minarik.base.data.db.AppDatabase
 import cz.minarik.base.data.rest.ws.DummyApiService
 import cz.minarik.base.di.repositories.DummyRepository
@@ -9,7 +8,6 @@ import cz.minarik.base.ui.dummy.DummyViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
-import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -19,10 +17,6 @@ import java.util.concurrent.TimeUnit
 
 
 val appModule = module {
-
-    // preferences
-    preferences()
-
 
     // view modely
     schedule()
@@ -52,15 +46,6 @@ val dbModule = module {
 }
 
 val allModules = listOf(appModule, restModule, dbModule)
-
-private fun Module.preferences() {
-    single(createdAtStart = true) {
-        PrefManager(
-            androidContext()
-        )
-    }
-    //single(named("MySecondPrefs") createdAtStart = true) { PrefManager(androidContext()) }
-}
 
 private fun Module.schedule() {
     single { DummyRepository() }
