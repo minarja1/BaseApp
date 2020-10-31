@@ -1,17 +1,14 @@
 package cz.minarik.base.common.extensions
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.net.Uri
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
@@ -20,14 +17,18 @@ import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.moshi.*
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import cz.minarik.base.R
-import cz.minarik.base.common.prefs.PreferenceProperty
 import cz.minarik.base.common.prefs.PrefManager
+import cz.minarik.base.common.prefs.PreferenceProperty
+import java.net.URL
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -92,7 +93,7 @@ fun RecyclerView.divider() {
     addItemDecoration(listDivider)
 }
 
-fun Fragment.initToolbar(toolbar: Toolbar){
+fun Fragment.initToolbar(toolbar: Toolbar) {
     val navController = NavHostFragment.findNavController(this)
     val appBarConfiguration = AppBarConfiguration(navController.graph)
     toolbar.setupWithNavController(navController, appBarConfiguration)
@@ -123,7 +124,6 @@ class LastDividerItemDecorator(private val mDivider: Drawable) : RecyclerView.It
         canvas.restore()
     }
 }
-
 
 
 fun RecyclerView.dividerMedium() {
@@ -229,4 +229,92 @@ fun Context.toast(message: String) {
 fun Context.toast(@StringRes resId: Int) {
     showToast(this, getString(resId))
 }
+
+fun Drawable.tint(context: Context, color: Int): Drawable {
+    val wrapDrawable: Drawable? = DrawableCompat.wrap(this)
+    return wrapDrawable?.let {
+        DrawableCompat.setTint(
+            it,
+            ContextCompat.getColor(context, color)
+        )
+        it
+    } ?: this
+}
+
+fun URL.getFavIcon(): String {
+    return "https://www.google.com/s2/favicons?sz=64&domain_url=$host"
+}
+
+
+val Context.isInternetAvailable: Boolean
+    get() {
+        var result = false
+        val connectivityManager =
+            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCapabilities = connectivityManager.activeNetwork ?: return false
+            val actNw =
+                connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+            result = when {
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            connectivityManager.run {
+                connectivityManager.activeNetworkInfo?.run {
+                    result = when (type) {
+                        ConnectivityManager.TYPE_WIFI -> true
+                        ConnectivityManager.TYPE_MOBILE -> true
+                        ConnectivityManager.TYPE_ETHERNET -> true
+                        else -> false
+                    }
+
+                }
+            }
+        }
+        return result
+    }
+
+
+val screenWidth: Int get() = Resources.getSystem().displayMetrics.widthPixels
+val screenWidthDp: Int get() = screenWidth.pxToDp
+val screenHeight: Int get() = Resources.getSystem().displayMetrics.heightPixels
+val screenHeightDp: Int get() = screenHeight.pxToDp
+
+
+fun RecyclerView.isScrolledToTop(): Boolean {
+    return !canScrollVertically(-1)
+}
+
+
+fun moshi(): Moshi {
+    return Moshi.Builder()
+        .add(Date::class.java, MoshiDateAdapter().nullSafe())
+        .add(KotlinJsonAdapterFactory())
+        .build()
+}
+
+
+class MoshiDateAdapter : JsonAdapter<Date>() {
+    @FromJson
+    override fun fromJson(reader: JsonReader): Date? {
+        return try {
+            val dateAsString = reader.nextString()
+            Date(dateAsString.toLong())
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    @ToJson
+    override fun toJson(writer: JsonWriter, value: Date?) {
+        if (value != null) {
+            writer.value(value.time)
+        }
+    }
+
+}
+
 
