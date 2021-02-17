@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Base</string>
+    <string name="common_base_error">Oops! Something went wrong.</string>
 </resources>

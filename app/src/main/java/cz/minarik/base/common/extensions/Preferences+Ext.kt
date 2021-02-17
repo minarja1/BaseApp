@@ -1,23 +1,44 @@
 package cz.minarik.base.common.extensions
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.InsetDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
+import android.text.format.DateUtils
+import android.util.Log
+import android.util.TypedValue
+import android.view.View
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
+import androidx.browser.customtabs.CustomTabsCallback
+import androidx.browser.customtabs.CustomTabsClient
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
+import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -26,13 +47,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.moshi.*
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import cz.minarik.base.R
+import cz.minarik.base.common.RECYCLER_MAX_VERTICAL_OFFEST_FOR_SMOOTH_SCROLLING
 import cz.minarik.base.common.prefs.PrefManager
 import cz.minarik.base.common.prefs.PreferenceProperty
+import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import java.net.URL
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.properties.ReadWriteProperty
+
 
 fun PrefManager.longPreference(
     key: String,
@@ -277,18 +301,6 @@ val Context.isInternetAvailable: Boolean
         return result
     }
 
-
-val screenWidth: Int get() = Resources.getSystem().displayMetrics.widthPixels
-val screenWidthDp: Int get() = screenWidth.pxToDp
-val screenHeight: Int get() = Resources.getSystem().displayMetrics.heightPixels
-val screenHeightDp: Int get() = screenHeight.pxToDp
-
-
-fun RecyclerView.isScrolledToTop(): Boolean {
-    return !canScrollVertically(-1)
-}
-
-
 fun moshi(): Moshi {
     return Moshi.Builder()
         .add(Date::class.java, MoshiDateAdapter().nullSafe())
@@ -317,4 +329,280 @@ class MoshiDateAdapter : JsonAdapter<Date>() {
 
 }
 
+fun Context.copyToClipBoard(label: String, text: String) {
+    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText(label, text)
+    clipboard.setPrimaryClip(clip)
+}
+
+@SuppressLint("RestrictedApi")
+fun PopupMenu.iconizeMenu(resources: Resources, iconPadding: Int = 4.dpToPx) {
+    if (menu is MenuBuilder) {
+        val menuBuilder = menu as MenuBuilder
+        menuBuilder.setOptionalIconsVisible(true)
+        for (item in menuBuilder.visibleItems) {
+            val iconMarginPx =
+                TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    iconPadding.toFloat(),
+                    resources.displayMetrics
+                ).toInt()
+            if (item.icon != null) {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                    item.icon =
+                        InsetDrawable(item.icon, iconMarginPx, 0, iconMarginPx, 0)
+                } else {
+                    item.icon =
+                        object :
+                            InsetDrawable(item.icon, iconMarginPx, 0, iconMarginPx, 0) {
+                            override fun getIntrinsicWidth(): Int {
+                                return intrinsicHeight + iconMarginPx + iconMarginPx
+                            }
+                        }
+                }
+            }
+        }
+    }
+}
+
+fun RecyclerView.dividerFullWidth() {
+    val listDivider = LastDividerItemDecorator(
+        AppCompatResources.getDrawable(
+            context,
+            R.drawable.recyclerview_divider_full_horizontal
+        )!!
+    )
+    addItemDecoration(listDivider)
+}
+
+
+/**
+ * Custom Tabs warmUp routine with optional Uri preloading.
+ */
+fun Context.warmUpBrowser(uriToPreload: Uri? = null) {
+    val customTabsConnection = object : CustomTabsServiceConnection() {
+        override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
+            client.run {
+                warmup(0)
+                uriToPreload?.let {
+                    val customTabsSession = newSession(object : CustomTabsCallback() {})
+                    val success = customTabsSession?.mayLaunchUrl(it, null, null)
+                    Log.i(
+                        "warmUpBrowser",
+                        "Preloading url $it ${if (success == true) "SUCCESSFUL" else "FAILED"}"
+                    )
+                }
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+        }
+    }
+    //init Custom tabs services
+    val success = CustomTabsClient.bindCustomTabsService(
+        this,
+        CHROME_PACKAGE,
+        customTabsConnection
+    )
+    Log.i("warmUpBrowser", "Binding Custom Tabs service ${if (success) "SUCCESSFUL" else "FAILED"}")
+}
+
+
+fun <T> compareLists(first: List<T>, second: List<T>): Boolean {
+
+    if (first.size != second.size) {
+        return false
+    }
+
+    return first.zip(second).all { (x, y) ->
+        x == y
+    }
+}
+
+fun Intent.addAppReferrer(context: Context) {
+    val scheme = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+        Intent.URI_ANDROID_APP_SCHEME
+    } else {
+        1 shl 1
+    }
+    putExtra(
+        Intent.EXTRA_REFERRER,
+        Uri.parse("${scheme}//${context.packageName}")
+    )
+}
+
+const val CHROME_PACKAGE = "com.android.chrome"
+
+fun Context.openCustomTabs(
+    uri: Uri,
+    customTabsBuilder: CustomTabsIntent.Builder = CustomTabsIntent.Builder()
+) {
+    try {
+        customTabsBuilder.setToolbarColor(
+            ContextCompat.getColor(
+                this,
+                cz.minarik.base.R.color.colorToolbar
+            )
+        )
+        customTabsBuilder.addDefaultShareMenuItem()
+
+        customTabsBuilder.setStartAnimations(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        customTabsBuilder.setExitAnimations(
+            this,
+            android.R.anim.slide_in_left,
+            android.R.anim.slide_out_right
+        )
+
+        val intent = customTabsBuilder.build()
+
+        intent.intent.addAppReferrer(this)
+
+        //to prevent "choose app" dialog -> open in CustomTabs if possible
+        getCustomTabsPackages(this, uri)?.let {
+            for (resolveInfo in it) {
+                if (resolveInfo.activityInfo.packageName == CHROME_PACKAGE) {
+                    intent.intent.setPackage(CHROME_PACKAGE)
+                    break
+                }
+            }
+        }
+        intent.launchUrl(this, uri)
+    } catch (e: ActivityNotFoundException) {
+        Log.e("openCustomTabs", e.message ?: "")
+        toast(R.string.common_base_error)
+    }
+}
+
+fun getCustomTabsPackages(context: Context, uri: Uri): ArrayList<ResolveInfo>? {
+    val pm: PackageManager = context.packageManager
+    // Get default VIEW intent handler.
+    val activityIntent =
+        Intent(Intent.ACTION_VIEW, uri)
+
+    // Get all apps that can handle VIEW intents.
+    val resolvedActivityList: List<ResolveInfo> = pm.queryIntentActivities(activityIntent, 0)
+    val packagesSupportingCustomTabs: ArrayList<ResolveInfo> = ArrayList()
+    for (info in resolvedActivityList) {
+        val serviceIntent = Intent()
+        serviceIntent.action = ACTION_CUSTOM_TABS_CONNECTION
+        serviceIntent.setPackage(info.activityInfo.packageName)
+        if (pm.resolveService(serviceIntent, 0) != null) {
+            packagesSupportingCustomTabs.add(info)
+        }
+    }
+    return packagesSupportingCustomTabs
+}
+
+
+fun TextView.handleHTML(context: Context) {
+    movementMethod = BetterLinkMovementMethod.newInstance().apply {
+        setOnLinkClickListener { textView, url ->
+            context.openCustomTabs(url.toUri())
+            true
+        }
+        setOnLinkLongClickListener { textView, url ->
+            // Handle long-click or return false to let the framework handle this link.
+            false
+        }
+        setOnClickListener {
+
+        }
+    }
+}
+
+fun String.getHostFromUrl(): String? {
+    return try {
+        val url = URL(this)
+        url.host.replace("www.", "")
+    } catch (e: Exception) {
+        Log.e("getHostFromUrl", e.message ?: "")
+        null
+    }
+}
+
+fun RecyclerView.scrollToTop(smooth: Boolean = false) {
+    val smoothScroll =
+        smooth && computeVerticalScrollOffset() > RECYCLER_MAX_VERTICAL_OFFEST_FOR_SMOOTH_SCROLLING
+    if (smoothScroll) {
+        smoothScrollToPosition(0);
+    } else {
+        scrollToPosition(0)
+    }
+}
+
+fun Date.toTimeElapsed(pastOnly: Boolean = true): CharSequence {
+    var actualTime = time
+    if (pastOnly && System.currentTimeMillis() - time < 0) actualTime =
+        System.currentTimeMillis() //API sometimes returns pubDates in future :(
+    return DateUtils.getRelativeTimeSpanString(
+        actualTime,
+        System.currentTimeMillis(),
+        DateUtils.SECOND_IN_MILLIS,
+        DateUtils.FORMAT_ABBREV_ALL
+    )
+}
+
+val screenWidth: Int get() = Resources.getSystem().displayMetrics.widthPixels
+val screenWidthDp: Int get() = screenWidth.pxToDp
+val screenHeight: Int get() = Resources.getSystem().displayMetrics.heightPixels
+val screenHeightDp: Int get() = screenHeight.pxToDp
+
+
+fun RecyclerView.isScrolledToTop(): Boolean {
+    return !canScrollVertically(-1)
+}
+
+@Suppress("unused")
+fun Fragment.setTransparentStatusBar(transparent: Boolean = true) {
+    (activity as AppCompatActivity).setTransparentStatusBar(transparent)
+}
+
+
+fun Activity.setTransparentStatusBar(transparent: Boolean = true) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        window.apply {
+            if (transparent) {
+                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                statusBarColor = Color.TRANSPARENT
+            } else {
+                clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                statusBarColor = Color.BLACK
+            }
+        }
+    }
+}
+
+fun Activity.hideKeyboard() {
+    findViewById<View>(android.R.id.content).hideKeyboard()
+}
+
+fun Fragment.hideKeyboard() {
+    (activity as AppCompatActivity).findViewById<View>(android.R.id.content)?.hideKeyboard()
+}
+
+fun Activity.openKeyboard() {
+    findViewById<View>(android.R.id.content).openKeyboard()
+}
+
+fun Fragment.openKeyboard() {
+    (activity as AppCompatActivity).findViewById<View>(android.R.id.content)?.openKeyboard()
+}
+
+
+fun hideKeyboard(context: Context, view: View) {
+    val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
+}
+
+fun View.hideKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(windowToken, 0)
+}
+
+fun View.openKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+}
 

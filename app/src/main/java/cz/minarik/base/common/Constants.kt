@@ -1,4 +1,5 @@
 package cz.minarik.base.common
+const val RECYCLER_MAX_VERTICAL_OFFEST_FOR_SMOOTH_SCROLLING: Long = 1000
 
 // rest
 const val BaseStagApiUrl = "https://stagws.uhk.cz/ws/services/rest2/"

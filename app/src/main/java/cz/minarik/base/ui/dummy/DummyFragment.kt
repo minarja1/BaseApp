@@ -12,8 +12,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DummyFragment : BaseFragment(R.layout.fragment_dummy) {
 
-    override val viewModel by viewModel<DummyViewModel>()
-    //private val viewModel2 by sharedViewModel<ScheduleViewModel>()
+    val viewModel by viewModel<DummyViewModel>()
 
     private val adapter by lazy {
         DummyAdapterBuilder(requireContext()) {
@@ -36,11 +35,4 @@ class DummyFragment : BaseFragment(R.layout.fragment_dummy) {
         viewModel.getOrLoadDummy()
     }
 
-    override fun showLoading(show: Boolean) {
-        progressBar.isVisible = show
-    }
-
-    override fun showError(error: String?) {
-        showToast(requireContext(), error ?: "Oops! Something went wrong.")
-    }
 }

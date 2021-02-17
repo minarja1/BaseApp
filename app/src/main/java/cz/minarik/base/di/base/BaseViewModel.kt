@@ -2,11 +2,8 @@ package cz.minarik.base.di.base
 
 import android.content.ComponentCallbacks
 import android.content.res.Configuration
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import cz.minarik.base.data.NetworkState
 import kotlinx.coroutines.*
-import retrofit2.HttpException
 
 abstract class BaseViewModel : ViewModel(), ComponentCallbacks {
     private val uiJob = SupervisorJob()
@@ -34,44 +31,17 @@ abstract class BaseViewModel : ViewModel(), ComponentCallbacks {
      */
     protected val defaultScope = CoroutineScope(Dispatchers.Default + defaultJob + handler)
 
-    val state = MutableLiveData<NetworkState>()
-
     protected fun launch(
         failure: ((Exception) -> Unit)? = null,
-        defaultState: MutableLiveData<NetworkState>? = state,
         operation: (suspend () -> Unit)
     ) {
         ioScope.launch {
-            defaultState?.postValue(NetworkState.LOADING)
             try {
                 operation()
-                defaultState?.postValue(NetworkState.SUCCESS)
             } catch (e: Exception) {
-                if (e is HttpException) {
-                    // ToDo - možno reagovat na http exception
-                }
                 failure?.invoke(e)
-                defaultState?.postValue(NetworkState.error(e))
             }
         }
-    }
-
-    /**
-     * How to call launch from children
-     */
-    private fun test() {
-        launch {
-
-        }
-
-        launch(
-            operation = {
-
-            },
-            failure = {
-
-            }
-        )
     }
 
     override fun onCleared() {

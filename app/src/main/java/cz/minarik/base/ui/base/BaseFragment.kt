@@ -16,8 +16,6 @@ import cz.minarik.base.di.base.BaseViewModel
 abstract class BaseFragment(@LayoutRes private val layoutId: Int) :
     Fragment(R.layout.fragment_base) {
 
-    abstract val viewModel: BaseViewModel
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -31,23 +29,8 @@ abstract class BaseFragment(@LayoutRes private val layoutId: Int) :
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        //todo neco sofistikovanejsiho vcetne erroru atd.
-        viewModel.state.observe {
-            showLoading(it.status == Status.RUNNING)
-
-            if (it.status == Status.FAILED) {
-                showError(it.message)
-            }
-        }
-    }
-
     protected fun <T> LiveData<T>.observe(function: (value: T) -> Unit) {
         this.observe(viewLifecycleOwner, Observer { function(it) })
     }
 
-    abstract fun showLoading(show: Boolean)
-    abstract fun showError(error: String?)
 }
