@@ -3,6 +3,6 @@ A base project to all of my Android apps. Contains common code base you're proba
 
 Add this to your app's build.gradle and code away!
 ```
- implementation 'com.github.minarja1:Base:v1.0.5'
+ implementation 'com.github.minarja1:Base:v1.0.8'
 
 ```
