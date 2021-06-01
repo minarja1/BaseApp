@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-//todo move to base
 abstract class BaseAdapter<T>(
         private val itemLayoutRes: Int,
         var items: List<T>,

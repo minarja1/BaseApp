@@ -53,8 +53,9 @@ dependencies {
     def paging_version = "2.1.2"
     api "androidx.paging:paging-runtime:$paging_version"
     // LiveData
-    def lifecycle_version = "2.2.0"
+    def lifecycle_version = "2.4.0-alpha01"
     api "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     api "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
     api "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
 
@@ -99,6 +100,9 @@ dependencies {
 
     //Coil
     api "io.coil-kt:coil:1.0.0"
+
+    //DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0-beta01"
 
     api "com.squareup.moshi:moshi:1.11.0"
     api "com.squareup.moshi:moshi-kotlin:1.8.0"

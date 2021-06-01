@@ -6,10 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
-//todo move to base
-abstract class BaseListAdapter<T>(
-        private val itemLayoutRes: Int,
-        diffCallback: DiffUtil.ItemCallback<T>,
+abstract class BaseListAdapterNew<T>(
+    private val itemLayoutRes: Int,
+    diffCallback: DiffUtil.ItemCallback<T>,
 ) : ListAdapter<T, BaseViewHolder<T>>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<T> {
@@ -30,7 +29,7 @@ abstract class BaseListAdapter<T>(
 
     inner class BaseViewHolderImp(itemView: View) : BaseViewHolder<T>(itemView) {
         override fun bind(item: T, position: Int) {
-            this@BaseListAdapter.bind(itemView, item, position, this)
+            this@BaseListAdapterNew.bind(itemView, item, position, this)
         }
     }
 
@@ -39,16 +38,31 @@ abstract class BaseListAdapter<T>(
     override fun onViewAttachedToWindow(holder: BaseViewHolder<T>) {
         super.onViewAttachedToWindow(holder)
         val item = holder.itemView.tag
-        if (item != null && item is BaseRecyclerItem) {
-            item.onAttachedToWindow(holder as BaseViewHolder<Any>)
+        if (item != null) {
+            try {
+                itemOnScreen(item as T, holder.itemView)
+            } catch (e: ClassCastException) {
+            }
         }
     }
 
     override fun onViewDetachedFromWindow(holder: BaseViewHolder<T>) {
         super.onViewDetachedFromWindow(holder)
         val item = holder.itemView.tag
-        if (item != null && item is BaseRecyclerItem) {
-            item.onDetachedFromWindow(holder  as BaseViewHolder<Any>)
+        if (item != null) {
+            try {
+                itemOffScreen(item as T, holder.itemView)
+            } catch (e: ClassCastException) {
+            }
         }
     }
+
+    open fun itemOnScreen(item: T, itemView: View) {
+
+    }
+
+    open fun itemOffScreen(item: T, itemView: View) {
+
+    }
+
 }
