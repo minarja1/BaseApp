@@ -18,13 +18,14 @@ package cz.minarik.base.data
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
+import androidx.paging.PagingData
 
 /**
  * Data class that is necessary for a UI to show a PagedListWithCallbacks and interact w/ the rest of the system
  */
-data class PagedListWithCallbacks<T>(
+data class PagedListWithCallbacks<T : Any>(
         // the LiveData of paged lists for the UI to observe
-        val pagedList: LiveData<PagedList<T>>,
+        val pagedList: LiveData<PagingData<T>>,
         // represents the network request status to show to the user
         val loadingAfter: LiveData<NetworkState>,
         // represents the refresh status to show to the user. Separate from networkState, this
