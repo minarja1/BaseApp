@@ -160,7 +160,7 @@ class DummyFragment : BaseFragment(R.layout.fragment_dummy) {...}
 
 And then call ``` protected fun <T> LiveData<T>.observe(function: (value: T) -> Unit)``` to observe LiveData
 
-or   ```  protected fun <T> Flow<T>.collectWhenStarted(function: (value: T) -> Unit) ```  to collect Flows according to [this approac](https://medium.com/androiddevelopers/a-safer-way-to-collect-flows-from-android-uis-23080b1f8bda)
+or   ```  protected fun <T> Flow<T>.collectWhenStarted(function: (value: T) -> Unit) ```  to collect Flows according to [this approach](https://medium.com/androiddevelopers/a-safer-way-to-collect-flows-from-android-uis-23080b1f8bda)
 
 #### 3.2. [Base ViewModel](https://github.com/minarja1/Base/blob/master/app/src/main/java/cz/minarik/base/di/base/BaseViewModel.kt)
 Extend the BaseViewModel class, i. e. like this:
