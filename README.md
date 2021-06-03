@@ -189,8 +189,6 @@ Example:
 ```kotlin
  fun getOrLoadDummy() {
         launch {
-            // if (alreadyDownloaded) dummyRepo.loadDummy()
-            // else
             schedule.postValue(dummyRepo.getDummy())
         }
     }
