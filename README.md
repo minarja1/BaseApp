@@ -225,7 +225,7 @@ class DummyAdapter(
 Using [ListAdapter](https://developer.android.com/reference/androidx/recyclerview/widget/ListAdapter) in this case. You need to provide the item layout and DiffCallback. Example: 
 
 ```kotlin
-class ManageListsAdapter() : BaseListAdapter<Dummy>(
+class DummyListAdapter() : BaseListAdapter<Dummy>(
     R.layout.row_dummy, object : DiffUtil.ItemCallback<Dummy>() {
         override fun areItemsTheSame(
             oldItem: Dummy,
