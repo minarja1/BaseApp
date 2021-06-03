@@ -184,7 +184,19 @@ class DummyFragment : BaseFragment(R.layout.fragment_dummy) {
 }
 ```
 
+You can then call the ```launch``` function to run coroutines using one of the scopes. 
+Example:
+```kotlin
+ fun getOrLoadDummy() {
+        launch {
+            // if (alreadyDownloaded) dummyRepo.loadDummy()
+            // else
+            schedule.postValue(dummyRepo.getDummy())
+        }
+    }
+```
 Refer to class javadocs for more details.
+ 
 #### 3.3. Adapters
 Base classes to make working with RecyclerView's Adapters easier.
 Refer to classes implementation to see how to detect when items are enering/exiting screen.
