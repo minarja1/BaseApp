@@ -159,6 +159,7 @@ class DummyFragment : BaseFragment(R.layout.fragment_dummy) {...}
 ```
 
 And then call ``` protected fun <T> LiveData<T>.observe(function: (value: T) -> Unit)``` to observe LiveData
+
 or   ```  protected fun <T> Flow<T>.collectWhenStarted(function: (value: T) -> Unit) ```  to collect Flows according to [this approac](https://medium.com/androiddevelopers/a-safer-way-to-collect-flows-from-android-uis-23080b1f8bda)
 
 #### 3.2. [Base ViewModel](https://github.com/minarja1/Base/blob/master/app/src/main/java/cz/minarik/base/di/base/BaseViewModel.kt)
@@ -167,3 +168,79 @@ Extend the BaseViewModel class, i. e. like this:
 class DummyViewModel(private val dummyRepo: DummyRepository) : BaseViewModel() {...}
 ```
 
+remember to always create instances of ViewModel classes via the [ViewModel API](https://developer.android.com/topic/libraries/architecture/viewmodela)
+as seen for example in the [Modules.kt](https://github.com/minarja1/Base/blob/master/app/src/main/java/cz/minarik/base/di/Modules.kt):
+```kotlin
+viewModel { DummyViewModel(get()) }
+```
+
+and inject them like this:
+```kotlin
+
+class DummyFragment : BaseFragment(R.layout.fragment_dummy) {
+
+    val viewModel by viewModel<DummyViewModel>()
+    //...
+}
+```
+
+Refer to class javadocs for more details.
+#### 3.3. Adapters
+Base classes to make working with RecyclerView's Adapters easier.
+Refer to classes implementation to see how to detect when items are enering/exiting screen.
+
+##### 3.3.1. [BaseAdapter](https://github.com/minarja1/Base/blob/master/app/src/main/java/cz/minarik/base/ui/base/BaseAdapter.kt)
+All you need to do is provide the list of items, the item layout and override the ```bind``` method. Example:
+```kotlin
+class DummyAdapter(
+    dummies: List<Dummy>,
+) : BaseAdapter<Dummy>(
+    R.layout.row_dummy,
+    dummies
+) {
+    override fun bind(
+        itemView: View,
+        item: Dummy,
+        position: Int,
+        viewHolder: BaseViewHolderImp
+    ) {
+        itemView.run {
+          dummyNameTextView.text = item.name
+        }
+    }
+}
+```
+
+##### 3.3.2. [BaseListAdapter](https://github.com/minarja1/Base/blob/master/app/src/main/java/cz/minarik/base/ui/base/BaseListAdapter.kt)
+Using [ListAdapter](https://developer.android.com/reference/androidx/recyclerview/widget/ListAdapter) in this case. You need to provide the item layout and DiffCallback. Example: 
+
+```kotlin
+class ManageListsAdapter() : BaseListAdapter<Dummy>(
+    R.layout.row_dummy, object : DiffUtil.ItemCallback<Dummy>() {
+        override fun areItemsTheSame(
+            oldItem: Dummy,
+            newItem: Dummy
+        ): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(
+            oldItem: Dummy,
+            newItem: Dummy
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
+) {
+    override fun bind(
+        itemView: View,
+        item: Dummy,
+        position: Int,
+        viewHolder: BaseViewHolderImp
+    ) {
+        itemView.run {
+            dummyNameTextView.text = item.name
+        }
+    }
+}
+```
