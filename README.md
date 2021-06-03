@@ -111,7 +111,7 @@ Refer to file [Preferences+Ext.kt](https://github.com/minarja1/Base/blob/master/
 
 Example usage: 
 ```kotlin
-   class PrefManagerImp(context: Context) : PrefManager(context) {
+class PrefManagerImp(context: Context) : PrefManager(context) {
     
     var shouldShowLongPressHint by booleanPreference(shouldShowLongPressHint)
 }
