@@ -222,7 +222,8 @@ Using [ListAdapter](https://developer.android.com/reference/androidx/recyclervie
 
 ```kotlin
 class DummyListAdapter() : BaseListAdapter<Dummy>(
-    R.layout.row_dummy, object : DiffUtil.ItemCallback<Dummy>() {
+    R.layout.row_dummy,
+    object : DiffUtil.ItemCallback<Dummy>() {
         override fun areItemsTheSame(
             oldItem: Dummy,
             newItem: Dummy
